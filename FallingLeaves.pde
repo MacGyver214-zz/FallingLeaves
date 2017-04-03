@@ -1,7 +1,7 @@
 Leaf leaf1, leaf2;
 ArrayList<Leaf> colorLeaves = new ArrayList<Leaf>();
 ArrayList<Leaf> darkLeaves = new ArrayList<Leaf>();
-int max = 40;
+int max = 60;
 PImage background;
 
 void setup() {
@@ -11,41 +11,41 @@ void setup() {
   background(background);
   pointLight(255,255,255,0,0,20);
   
-  //leaf1 = new Leaf(width/2, height/2,0);
-  //leaf2 = new Leaf(2*width/3, height/3,500);
-  
   for (int i = 0; i < max; i++) {
     float newX = random(width);
+    float newY = random(-500,-200);
     float newZ = random(-500,100);
-    colorLeaves.add(new Leaf(newX,-30,newZ, true));
+    colorLeaves.add(new Leaf(newX,newY,newZ, true));
   }
   
   for (int i = 0; i < max; i++) {
     float newX = random(width);
+    float newY = random(-500,-400);
     float newZ = random(-800,-500);
-    darkLeaves.add(new Leaf(newX,-30,newZ, false));
+    darkLeaves.add(new Leaf(newX,newY,newZ, false));
   }
 }
 
 void draw() {
   background(background);
   lights();
-  pointLight(255,255,255,0,0,20);
-  //leaf1.display();
-  //leaf2.display();
-  for(int i = 0; i < max; i++) {
+  pointLight(100,100,100,0,0,100);
+
+  for (int i = 0; i < colorLeaves.size(); i++) {
     colorLeaves.get(i).display();
-    darkLeaves.get(i).display();
-    colorLeaves.get(i).drift();
-    darkLeaves.get(i).drift();
     if (colorLeaves.get(i).checkOffScreen()) {
       colorLeaves.remove(i);
-      colorLeaves.add(new Leaf(random(width),-30,random(-300,300),true));
+      colorLeaves.add(new Leaf(random(width),-200,random(-300,300),true));
     }
+    colorLeaves.get(i).drift();
+  }
+  for (int i = 0; i < darkLeaves.size(); i++) {
+    darkLeaves.get(i).display();
     if (darkLeaves.get(i).checkOffScreen()) {
       darkLeaves.remove(i);
-      darkLeaves.add(new Leaf(random(width),-30,random(-500,-300),false));
+      darkLeaves.add(new Leaf(random(width),-500,random(-500,-300),false));
     }
+    darkLeaves.get(i).drift();
   }
 }
 
@@ -102,8 +102,8 @@ class Leaf {
   
   void drift() {
     float dy = noise(frameCount*0.022, randDY)*dropRate;
-    float dx = noise(frameCount*0.023, randDX)*dropRateX;
-    float dz = noise(frameCount*0.015, randDZ)*2-1;
+    float dx = noise(frameCount*0.223, randDX)*dropRateX;
+    float dz = noise(frameCount*0.215, randDZ)*2-1;
     leafCenter[0] += dx;
     leafCenter[1] += dy;
     leafCenter[2] += dz;
@@ -111,9 +111,9 @@ class Leaf {
 
   void display() {
     float theta = radians(frameCount);
-    float xAxis = noise(frameCount*0.003,randX)*2-1;
-    float yAxis = noise(frameCount*0.003,randY)*2-1;
-    float zAxis = noise(frameCount*0.005,randZ)*2-1;
+    float xAxis = noise(frameCount*0.002,randX)*2-1;
+    float yAxis = noise(frameCount*0.002,randY)*2-1;
+    float zAxis = noise(frameCount*0.002,randZ)*2-1;
     
     pushMatrix();
     if (colorOn) {
@@ -128,10 +128,10 @@ class Leaf {
   }
   
   boolean checkOffScreen() {
-    if (leafCenter[1] > height + 10) {
-      return true;
+    if (colorOn) {
+      return leafCenter[1] > height + 300;
     } else {
-      return false;
+        return leafCenter[1] > height + 500;
     }
   }
 }
